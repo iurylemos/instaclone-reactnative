@@ -9,6 +9,50 @@ class Lista extends Component {
     this.state = {
       feed: this.props.data
     }
+
+    this.mostraLikes = this.mostraLikes.bind(this)
+    this.like = this.like.bind(this)
+    this.carregaIcone = this.carregaIcone.bind(this)
+  }
+
+  mostraLikes = (likers) => {
+    const { feed } = this.state
+
+    if (feed.likers <= 0) {
+      return;
+    }
+
+    return (
+      <Text style={styles.likers}>
+        {feed.likers} {feed.likers > 1 ? 'curtidas' : 'curtida'}
+      </Text>
+    )
+  }
+
+  like = () => {
+    const { feed } = this.state
+
+    if (feed.likeada === true) {
+      this.setState({
+        feed: {
+          ...feed,
+          likeada: false,
+          likers: feed.likers - 1
+        }
+      })
+    } else {
+      this.setState({
+        feed: {
+          ...feed,
+          likeada: true,
+          likers: feed.likers + 1
+        }
+      })
+    }
+  }
+
+  carregaIcone = (likeada) => {
+    return likeada ? require('../assets/img/likeada.png') : require('../assets/img/like.png')
   }
 
   render = () => {
@@ -27,13 +71,18 @@ class Lista extends Component {
           source={{ uri: feed.imgPublicacao }}
           style={styles.fotoPublicacao} />
         <View style={styles.areaBtn}>
-          <TouchableOpacity>
-            <Image source={require('../assets/img/like.png')} style={styles.iconeLike} />
+          <TouchableOpacity onPress={this.like}>
+            <Image source={this.carregaIcone(feed.likeada)} style={styles.iconeLike} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.btnSend}>
             <Image source={require('../assets/img/send.png')} style={styles.iconeLike} />
           </TouchableOpacity>
         </View>
+
+        {
+          this.mostraLikes(feed.likers)
+        }
+
         <View style={styles.viewRodape}>
           <Text style={styles.nomeRodape}>
             {feed.nome}
@@ -42,6 +91,7 @@ class Lista extends Component {
             {feed.descricao}
           </Text>
         </View>
+
       </View>
     )
   }
@@ -54,6 +104,7 @@ const styles = StyleSheet.create({
   },
   nomeUsuario: {
     fontSize: 22,
+    paddingLeft: 5,
     textAlign: 'left',
     color: '#000'
   },
@@ -98,6 +149,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     paddingLeft: 5
+  },
+  likers: {
+    fontWeight: 'bold',
+    marginLeft: 5
   }
 
 })
